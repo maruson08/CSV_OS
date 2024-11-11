@@ -1,4 +1,6 @@
-o,"{'filename': 't.txt', 'dateCreated': '2024-11-11-13-02-56', 'dateLastModified': '2024-11-11-13-02-56', 'content': 'adf\nasdfasdf\n'}","{'filename': 'babo.csv', 'dateCreated': '2024-11-11-10-23-56', 'dateLastModified': '2024-11-11-10-23-56', 'content': '1,1\n'}"
+o
+,folder2
+,EOD
 ,test1,"{'filename': 'test.txt', 'dateCreated': '2024-11-11-12-40-04', 'dateLastModified': '2024-11-11-12-46-45', 'content': 'afasdfsd\ndsafasdf\n'}"
 ,EOD
-EOM,,
+EOM,

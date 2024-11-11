@@ -226,16 +226,16 @@ def modifyDoc(path):
     if folderlinenum==None or mod_idx==None:
         print('Error: Wrong path.')
         return
+    with open('disk.csv','r',newline='') as file:
+        reader=csv.reader(file)
+        lines=list(reader)
     new_filename=input('Enter the new name for this file. if you do not change the name, please press enter ')
     if new_filename!='':
         if not checkCorrectname(mod_folder,new_filename):
             return
-        with open('disk.csv','r',newline='') as file:
-            reader=csv.reader(file)
-            lines=list(reader)
         mod_line=eval(lines[folderlinenum][mod_idx])
         mod_line['filename']=new_filename
-        lines[folderlinenum][mod_idx]=mod_line
+        lines[folderlinenum][mod_idx]=str(mod_line)
     new_filetext=''
     print('Enter new line. Blank enter for quit.')
     while True: #내용 입력
@@ -243,9 +243,6 @@ def modifyDoc(path):
         if not line:
             break
         new_filetext=new_filetext+line+'\n'
-    with open('disk.csv','r',newline='') as file:
-        reader=csv.reader(file)
-        lines=list(reader)
     mod_line=eval(lines[folderlinenum][mod_idx])
     mod_line['content']=new_filetext
     mod_line['dateLastModified']=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
