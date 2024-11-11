@@ -1,12 +1,16 @@
 import csv
 import datetime
 import pandas as pd
-# 파일 내용을 리스트로 저장
-def findfile(path): #파일의 상위 폴더, 파일명을 입력받았을때 폴더가 있는 줄의 몇번째 인덱스에 파일이 존재하는지 반환하는 함수 
+
+global current_depth
+
+current_depth = 0
+
+def findFile(path): #파일의 상위 폴더, 파일명을 입력받았을때 폴더가 있는 줄의 몇번째 인덱스에 파일이 존재하는지 반환하는 함수 
     split_path=path.split("/")
     filename=split_path.pop() #경로의 마지막을 파일 이름으로 반환
     folder='/'.join(split_path) #상위 폴더 경로 문자열로 변환
-    folderlinenum=movedir(folder)[0] #폴더 위치 반환
+    folderlinenum=findDir(folder)[0] #폴더 위치 반환
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
         lines=list(reader)
@@ -14,16 +18,20 @@ def findfile(path): #파일의 상위 폴더, 파일명을 입력받았을때 �
     file_idx=0
     for text in lines[folderlinenum]: #삭제할 파일 상위 폴더의 첫번쨰 파일이 있는 줄부터 순회하여 삭제할 파일을 찾음
         if findfolder:
+            if text=='':
+                print('')
+                return None
             dic_text=eval(text) #문자열을 딕셔너리로 변환
             if dic_text['filename']==filename:
                 return file_idx
         if text!='':
             findfolder=True
         file_idx+=1
-    print('파일이 존재하지 않습니다. 다시 확인해주세요')
+    print(f'Error: File name {filename} name does not exist.')
     return None
 
-def movedir(path):
+def findDir(path):
+    global current_depth
     with open('disk.csv', 'r') as d:
         disk = list(csv.reader(d))
         linenum = 0  # 줄 번호
@@ -53,18 +61,18 @@ def movedir(path):
                     lastlinenum=linenum
                     return startlinenum,lastlinenum
             linenum += 1
-        print("Path not found")
+        print('The system cannot find the path specified.')
         return None,None
     
-def check_correctname(path,new_filename):
+def checkCorrectname(path,new_filename):
     if '/' in new_filename:
-        print('폴더명에는 /가 들어갈 수 없습니다.')
+        print('Error: File name can\'t include /.')
         return False
     split_extension=new_filename.split(".") #확장자명 구분
     if len(split_extension)!=2:
-        print('파일명이 올바르지 않습니다. 확장자를 제대로 입력해주세요')
+        print('Error: File name it not correct. Check the extension.')
         return False
-    startfilenum=movedir(path)[0]
+    startfilenum=findDir(path)[0]
     findfolder=False
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
@@ -73,7 +81,7 @@ def check_correctname(path,new_filename):
             if findfolder:
                 dic_text=eval(text)
                 if dic_text['filename']==new_filename:
-                    print('이미 같은 이름의 파일이 존재합니다. 다른 파일명을 입력해주세요')
+                    print(f'This destination already contains a folder named {dic_text['filename']}.')
                     return False
             if text!='':
                 findfolder=True
@@ -81,11 +89,11 @@ def check_correctname(path,new_filename):
 
 def createFolders(path, new_filename): #설치 위치, 파일명 받음
     if '/' in new_filename:
-        print('폴더명에는 /가 들어갈 수 없습니다.')
+        print('Error: Folder name can\'t include /.')
         return
-    startfilenum, lastfilenum=movedir(path)[0], movedir(path)[1]
-    if movedir(path)[0]==None:
-        print('경로명이 잘못됨')
+    startfilenum, lastfilenum=findDir(path)[0], findDir(path)[1]
+    if findDir(path)[0]==None:
+        print('Error: Wrong path.')
         return
     with open('disk.csv', 'r', newline='') as file:
         reader = csv.reader(file)
@@ -93,7 +101,7 @@ def createFolders(path, new_filename): #설치 위치, 파일명 받음
     for i in range(startfilenum, lastfilenum+1):
         for foldername in lines[i]:
             if foldername==new_filename:
-                print('이미 같은 파일명이 있습니다. 다른걸로 해주세요')
+                print(f'This destination already contains a folder named {foldername}.')
                 return 0
             if foldername!='': #프로그램 작동 시간 줄이려고 한 줄의 첫번째 칸 텍스트만 읽음
                 break
@@ -117,16 +125,16 @@ def createFolders(path, new_filename): #설치 위치, 파일명 받음
     with open('disk.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(lines)
-        print('성공적으로 폴더 생성을 마쳤습니다.')
+        print('Successfully created folder.')
         return
-    print('오류 발생. disk 파일을 확인해주세요')
+    print('Error: Please check disk.csv file.')
 
 
 def deleteFolders(path):
-    if movedir(path)[0]==None:
-        print('경로명이 잘못됨')
+    if findDir(path)[0]==None:
+        print('Error: Wrong path.')
         return
-    startfilenum,lastfilenum=movedir(path)
+    startfilenum,lastfilenum=findDir(path)
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
         lines=list(reader)
@@ -137,89 +145,90 @@ def deleteFolders(path):
     with open('disk.csv', 'w',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(lines)
-        print('성공적으로 폴더 삭제를 마쳤습니다')
+        print('Successfully deleted folder.')
         return
-    print('오류 발생. disk 파일을 확인해주세요')
+    print('Error: Please check disk.csv file.')
 
 def createDoc(path,new_filename): #설치 위치, 이름, 내용 입력
-    if movedir(path)[0]==None:
-        print('경로명이 잘못됨')
+    if findDir(path)[0]==None:
+        print('Error: Wrong path')
         return
     split_extension=new_filename.split(".")
     if len(split_extension)!=2:
-        print('파일명이 올바르지 않습니다. 확장자를 제대로 입력해주세요')
+        print('Error: File name it not correct. Check the extension.')
         return
     if split_extension[1]!='txt' and split_extension[1]!='csv':
-        print('지원하지 않는 확장자 입니다. 현재는 txt나 csv만 지원하고 있습니다.')
+        print(f'Currently {split_extension[1]} does not supported. Only .txt and .csv supported.')
         return
-    startfilenum=movedir(path)[0]
+    startfilenum=findDir(path)[0]
     findfolder=False
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
         lines=list(reader)
         for text in lines[startfilenum]: #동일명의 파일이 있는지 확인
             if findfolder:
-                dic_text=eval(text)
+                dic_text = eval(text)
                 if dic_text['filename']==new_filename:
-                    print('이미 같은 이름의 파일이 존재합니다. 다른 파일명을 입력해주세요')
+                    print(f'This destination already contains a folder named {dic_text['filename']}.')
                     return
             if text!='':
                 findfolder=True
+            
     content=''
     split_extension=new_filename.split(".") #확장자명 구분
-    print('저장하고 싶은 내용을 한줄씩 입력해주세요. 입력이 끝나면 enter를 눌러 입력을 마치세요')
+    print('Enter new line. Blank enter for quit.')
     while True: #내용 입력
         line = input()
         if not line:
             break
         content=content+line+'\n'
-
+    deep=len(path.split('/'))
     new_text = str({'filename':new_filename,'dateCreated':datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'),'dateLastModified': datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'), 'content': content})
-    lines[startfilenum].append(new_text)
+    lines[startfilenum].insert(deep, new_text)
 
     
     with open('disk.csv', 'w',newline='') as file:
             writer=csv.writer(file)
             writer.writerows(lines)
-            print('성공적으로 파일이 생성되었습니다.')
+            print('Successfully created file.')
             return
-    print('오류 발생. disk 파일을 확인해주세요')
+    print('Error: Please check disk.csv file.')
 
 
 def deleteDoc(path):
     split_path=path.split("/")
     del_filename=split_path.pop() #경로의 마지막을 파일 이름으로 반환
     del_folder='/'.join(split_path) #상위 폴더 경로 문자열로 변환
-    folderlinenum=movedir(del_folder)[0] #폴더 위치 반환
+    folderlinenum=findDir(del_folder)[0] #폴더 위치 반환
     if '/' in del_filename:
-        print('폴더명에는 /가 들어갈 수 없습니다.')
+        print('Error: Folder name can\'t include /.')
         return
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
         lines=list(reader)
-    del_idx=findfile(path)
+    del_idx=findFile(path)
     if del_idx==None:
         return
     lines[folderlinenum].pop(del_idx)
     with open('disk.csv', 'w',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(lines)
-        print('성공적으로 파일을 삭제했습니다')
+        print('Successfully deleted file.')
         return
-    print('오류 발생. 정상적으로 파일 삭제가 이루어지지 않았습니다.')
+    print('Error: File remove does not proceed properly.')
 
 def modifyDoc(path):
     split_path=path.split("/")
     mod_filename=split_path.pop() #경로의 마지막을 파일 이름으로 반환
     mod_folder='/'.join(split_path) #상위 폴더 경로 문자열로 변환
-    folderlinenum=movedir(mod_folder)[0] #폴더 위치 반환
-    mod_idx=findfile(path)
+    folderlinenum=findDir(mod_folder)[0] #폴더 위치 반환
+    mod_idx=findFile(path)
     if folderlinenum==None or mod_idx==None:
-        print('경로가 잘못되었습니다. 확인해주세요')
+        print('Error: Wrong path.')
         return
-    new_filename=input('enter the new name for this file. if you do not change the name, please press enter ')
+    new_filename=input('Enter the new name for this file. if you do not change the name, please press enter ')
     if new_filename!='':
-        if not check_correctname(mod_folder,new_filename):
+        if not checkCorrectname(mod_folder,new_filename):
             return
         with open('disk.csv','r',newline='') as file:
             reader=csv.reader(file)
@@ -228,7 +237,7 @@ def modifyDoc(path):
         mod_line['filename']=new_filename
         lines[folderlinenum][mod_idx]=mod_line
     new_filetext=''
-    print('저장하고 싶은 내용을 한줄씩 입력해주세요. 입력이 끝나면 enter를 눌러 입력을 마치세요')
+    print('Enter new line. Blank enter for quit.')
     while True: #내용 입력
         line = input()
         if not line:
@@ -244,16 +253,18 @@ def modifyDoc(path):
     with open('disk.csv', 'w',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(lines)
-        print('성공적으로 파일을 수정했습니다')
+        print('Successfully modified file.')
         return
-    print('오류 발생. 정상적으로 파일 수정이 이루어지지 않았습니다.')
+    print('Error: File modification does not proceed properly.')
 
 def readDoc(path):
     split_path=path.split("/")
     read_filename=split_path.pop() #경로의 마지막을 파일 이름으로 반환
     read_folder='/'.join(split_path) #상위 폴더 경로 문자열로 변환
-    folderlinenum=movedir(read_folder)[0] #폴더 위치 반환
-    read_idx=findfile(path)
+    folderlinenum=findDir(read_folder)[0] #폴더 위치 반환
+    read_idx=findFile(path)
+    if folderlinenum==None or read_idx==None:
+        print('Error: File is not exsit in this directory.')
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
         lines=list(reader)
@@ -272,4 +283,17 @@ def readDoc(path):
         csv_content = csv_content.fillna("")
         print(csv_content)
 
-readDoc('o/folder2/testfolder/test.csv')
+def tree(path): # 디렉토리 출력
+    rlist = []
+    with open('disk.csv', 'r') as f:
+        start, end = findDir(path) # 해당 디렉토리의 깊이 범위 구하기
+        r = list(csv.reader(f))
+        mLen = max([len(i) for i in r]) # 가장 긴 디렉토리 깊이(csv 깊이와 다름) 구하기
+        for i in range(start, end):
+            mR = r[i]
+            if len(mR) < mLen:
+                for i in range(mLen-len(mR)):
+                    mR.append('')
+            rlist.append(mR)
+        df = pd.DataFrame(rlist)
+        print(df)
