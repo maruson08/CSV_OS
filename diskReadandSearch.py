@@ -81,7 +81,7 @@ def checkCorrectname(path,new_filename):
             if findfolder:
                 dic_text=eval(text)
                 if dic_text['filename']==new_filename:
-                    print(f'This destination already contains a folder named {dic_text['filename']}.')
+                    print(f"This destination already contains a folder named {dic_text['filename']}.")
                     return False
             if text!='':
                 findfolder=True
@@ -169,7 +169,7 @@ def createDoc(path,new_filename): #설치 위치, 이름, 내용 입력
             if findfolder:
                 dic_text =eval(text)
                 if dic_text['filename']==new_filename:
-                    print(f'This destination already contains a folder named {dic_text['filename']}.')
+                    print(f"This destination already contains a folder named {dic_text['filename']}.")
                     return
             if text!='':
                 findfolder=True
