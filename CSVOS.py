@@ -1,4 +1,3 @@
-
 import diskReadandSearch as drs
 import datetime
 import psutil
@@ -79,7 +78,7 @@ command = {
 }
 
 while True:
-    try:
+    # try:
         print()
         prompt = input(f'{curPath}>>').split(' ')
         if prompt[0] not in command: # 명령어 존재 여부 확인
@@ -94,5 +93,5 @@ while True:
 
         command[prompt[0]]['function'](*args) # 함수실행
         
-    except Exception as e:
-        print(f"System Error: {e}")
+    # except Exception as e:
+    #     print(f"System Error: {e}")

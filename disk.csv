@@ -1,4 +1,4 @@
-o,"{'filename': 'babo.csv', 'dateCreated': '2024-11-11-10-23-56', 'dateLastModified': '2024-11-11-10-23-56', 'content': '1,1\n'}",,
-,test1
+o,"{'filename': 'babo.csv', 'dateCreated': '2024-11-11-10-23-56', 'dateLastModified': '2024-11-11-10-23-56', 'content': '1,1\n'}"
+,test1,"{'filename': 'test.txt', 'dateCreated': '2024-11-11-12-40-04', 'dateLastModified': '2024-11-11-12-46-45', 'content': 'afasdfsd\ndsafasdf\n'}"
 ,EOD
 EOM,,

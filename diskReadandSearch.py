@@ -167,7 +167,7 @@ def createDoc(path,new_filename): #설치 위치, 이름, 내용 입력
         lines=list(reader)
         for text in lines[startfilenum]: #동일명의 파일이 있는지 확인
             if findfolder:
-                dic_text = eval(text)
+                dic_text =eval(text)
                 if dic_text['filename']==new_filename:
                     print(f'This destination already contains a folder named {dic_text['filename']}.')
                     return
@@ -246,7 +246,7 @@ def modifyDoc(path):
     with open('disk.csv','r',newline='') as file:
         reader=csv.reader(file)
         lines=list(reader)
-    eval(lines[folderlinenum][mod_idx])
+    mod_line=eval(lines[folderlinenum][mod_idx])
     mod_line['content']=new_filetext
     mod_line['dateLastModified']=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     lines[folderlinenum][mod_idx]=mod_line
