@@ -182,9 +182,9 @@ def createDoc(path,new_filename): #설치 위치, 이름, 내용 입력
         if not line:
             break
         content=content+line+'\n'
-    deep=len(path.split('/'))
+    depth=len(path.split('/'))
     new_text = str({'filename':new_filename,'dateCreated':datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'),'dateLastModified': datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'), 'content': content})
-    lines[startfilenum].insert(deep, new_text)
+    lines[startfilenum].insert(depth, new_text)
 
     
     with open('disk.csv', 'w',newline='') as file:
