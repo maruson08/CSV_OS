@@ -11,5 +11,5 @@
 - pendulum
 - tqdm
 
-I'll enew this useless project
+I'll renew this useless project
 ETA: TBD
