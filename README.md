@@ -10,3 +10,6 @@
 - rich
 - pendulum
 - tqdm
+
+I'll enew this useless project
+ETA: TBD
